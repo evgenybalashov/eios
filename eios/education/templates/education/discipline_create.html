@@ -1,0 +1,20 @@
+{% extends 'profiles/profile.html' %}
+{% load crispy_forms_tags %}
+
+
+{% block profile_content %}
+
+<div class="row content-block">
+	<div class="col-md-12">
+		<h2 id="header">Добавить дисциплину</h2>
+		<div class="row">
+			<div class="col-md-12">
+				<form action=" " method="post">{% csrf_token %}
+					{% crispy form helper %}
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+	
+{% endblock %}

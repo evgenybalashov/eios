@@ -1,0 +1,136 @@
+{% load core_filters %}
+
+
+<div class="row content-block">
+    <div class="col-md-12">
+        <h2>{{u.userdetail.last_name}} {{u.userdetail.first_name}} {{u.userdetail.middle_name}}
+        {% if u.is_superuser %}
+            <i class="fa fa-small fa-star"></i>
+        {% else %}
+            <i class="fa fa-small fa-asterisk"></i>
+        {% endif %}</h2>
+        <div class="row">
+            <div class="col-md-6">
+            {% if u.userdetail %}
+                <table class="table table-striped">
+                    <tbody>
+                        {% if u.userdetail.sex %}
+                        <tr>
+                            <td>Пол:</td><td>{{u.userdetail.get_sex_display}}</td>
+                        </tr>
+                        {% endif %}
+                        {% if u.userdetail.birthday %}
+                        <tr>
+                            <td>Дата рождения:</td><td>{{u.userdetail.birthday}}</td>
+                        </tr>
+                        {% endif %}
+                        {% if u.userdetail.address %}
+                        <tr>
+                            <td>Адрес:</td><td>{{u.userdetail.address}}</td>
+                        </tr>
+                        {% endif %}
+                        {% if u.userdetail.phone %}
+                        <tr>
+                            <td>Телефон:</td><td>{{u.userdetail.phone}}</td>
+                        </tr>
+                        {% endif %}
+                        <tr>
+                            <td>E-mail:</td><td>{{u.email}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            {% else %}
+                <h3>Кто Вы? <a href="{% url 'profile_create' u.pk %}">Расскажите о себе!</a></h3>
+            {% endif %}
+            </div>
+            <div class="col-md-6">
+                {% if u.userdetail.professor %}
+                    <table class="table table-striped">
+                        <tbody>
+                            <tr>
+                                <td>Должность:</td><td>{{u.userdetail.professor.get_position_display}}</td>
+                            </tr>
+                            <tr>
+                                <td>Подразделение:</td><td>{{u.userdetail.professor.dept}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                {% else %}
+                    <h3>Нет данных о преподавательской деятельности. <a href="{% url 'job_create' u.pk %}#header">Добавим?</a></h3>
+                {% endif %}
+            </div>
+        </div>
+        {% if u.userdetail %}
+            <div class="row">
+                <div class="col-md-12">
+                    <table class="table table-striped">
+                        <tbody>
+                            {% if u.userdetail.social_work %}
+                            <tr>
+                                <td>Общественная работа:</td><td>{{u.userdetail.social_work}}</td>
+                            </tr>
+                            {% endif %}
+                            {% if u.userdetail.langlevel_set.all %}
+                            <tr>
+                                <td>Языки:</td>
+                                <td>
+                                    {{u.userdetail.langlevel_set.all|join:", "}}
+                                </td>
+                            </tr>
+                            {% endif %}
+                            {% if u.userdetail.marital_status %}
+                            <tr>
+                                <td>Семейное положение:</td><td>{{u.userdetail.marital_status}}</td>
+                            </tr>
+                            {% endif %}
+                            {% if u.userdetail.notes %}
+                            <tr>
+                                <td>Примечания:</td><td>{{u.userdetail.notes}}</td>
+                            </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        {% endif %}
+    </div>
+</div>
+
+{% if querylist %}
+<div class="row content-block">
+    <div class="col-md-12">
+        <br />
+        <div class="alert alert-danger" role="alert">
+            <p class="lead"><i class="fa fa-exclamation-triangle"></i> Запросы на добавление</p>
+        </div>
+        <table class="table table-striped">
+            <thead>
+                <th>№</th>
+                <th>ФИО</th>
+                <th colspan="3"></th>
+            </thead>
+            <tbody>
+                {% for person in querylist %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>
+                            <a href="{% url 'profile' person.user.pk %}">
+                                {{ person }}
+                            </a>
+                        </td>
+                        <td>
+                            <form action="{% url 'confirm_query_form' u.pk %}" enctype="multipart/form-data" method="post">{% csrf_token %}
+                                <button type="submit" name="query_response" class="btn btn-default" value="student" />Студент</button>
+                                <button type="submit" name="query_response" class="btn btn-default" value="professor" />Преподаватель</button>
+                                <button type="submit" name="query_response" class="btn btn-default" value="decline" />Отклонить</button>
+                                <input type="hidden" value="{{ person.user.pk }}" name="person">
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endif %}

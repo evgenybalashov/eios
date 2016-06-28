@@ -1,0 +1,225 @@
+{% load crispy_forms_tags %}
+{% load core_filters %}
+
+
+<div class="row content-block">
+    <div class="col-md-12">
+        <h2>{{u.userdetail.last_name}} {{u.userdetail.first_name}} {{u.userdetail.middle_name}}
+        {% if u.is_superuser %}
+            <i class="fa fa-small fa-star"></i>
+        {% endif %}
+        </h2>
+        <div class="row">
+            <div class="col-md-6">
+            {% if u.userdetail %}
+                <table class="table table-striped">
+                    <tbody>
+                        <tr>
+                            <td>Пол:</td><td>{{u.userdetail.get_sex_display}}</td>
+                        </tr>
+                        {% if u.userdetail.birthday %}
+                        <tr>
+                            <td>Дата рождения:</td><td>{{u.userdetail.birthday}}</td>
+                        </tr>
+                        {% endif %}
+                        <tr>
+                            <td>Адрес:</td><td>{{u.userdetail.address}}</td>
+                        </tr>
+                        <tr>
+                            <td>Телефон:</td><td>{{u.userdetail.phone}}</td>
+                        </tr>
+                        <tr>
+                            <td>E-mail:</td><td>{{u.email}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            {% else %}
+                <h3>Кто Вы? <a href="{% url 'profile_create' u.pk %}">Расскажите о себе!</a></h3>
+            {% endif %}
+            </div>
+            <div class="col-md-6">
+                {% if edu %}
+                    <table class="table table-striped">
+                        <tbody>
+                            <tr>
+                                <td>Факультет:</td><td>{{edu.faculty}}</td>
+                            </tr>
+                            <tr>
+                                <td>Номер зачетки:</td><td>{{edu.record_book_number}}</td>
+                            </tr>
+                            <tr>
+                                <td>Группа:</td><td>{{edu.group}}</td>
+                            </tr>
+                            <tr>
+                                <td>Направление подготовки:</td><td>{{edu.study_profile}}</td>
+                            </tr>
+                            <tr>
+                                <td>Специальность:</td><td>{{edu.speciality}}</td>
+                            </tr>
+                            {% if edu.scientific_work %}
+                            <tr>
+                                <td>Научная деятельность:</td><td>{{edu.scientific_work}}</td>
+                            </tr>
+                            {% endif %}
+                            <tr>
+                                <td>Статус:</td><td>{{edu.get_status_display}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                {% elif u.userdetail %}
+                    {% if user.is_superuser or user.userdetail.is_professor %}
+                        <h3>Нет данных о текущем обучении. <a href="{% url 'education_create' u.pk %}#header">Добавим?</a></h3>
+                    {% else %}
+                        {% if not u.userdetail.application %}
+                        <p class="lead">Укажите Ваше подразделение</p>
+                        <form action="{% url 'dept_query_form' u.pk %}" enctype="multipart/form-data" method="post">{% csrf_token %}
+                            {{ deptqueryform|crispy }}
+                            <input type="submit" class="btn btn-primary" value="Сохранить подразделение" />
+                        </form>
+                        {% else %}
+                        <p class="lead">Запрос в подразделение ({{u.userdetail.application.dept}}) отправлен</p>
+                        <p>Ожидается подтверждение места учебы/работы руководителем подразделения.</p>
+                        {% endif %}
+                    {% endif %}
+                {% endif %}
+            </div>
+        </div>
+        {% if u.userdetail %}
+            <div class="row">
+                <div class="col-md-12">
+                    <table class="table table-striped">
+                        <tbody>
+                            {% if u.userdetail.social_work %}
+                            <tr>
+                                <td>Общественная работа:</td><td>{{u.userdetail.social_work}}</td>
+                            </tr>
+                            {% endif %}
+                            {% if u.userdetail.langlevel_set.all %}
+                            <tr>
+                                <td>Языки:</td>
+                                <td>
+                                    {{u.userdetail.langlevel_set.all|join:", "}}
+                                </td>
+                            </tr>
+                            {% endif %}
+                            <tr>
+                                <td>Семейное положение:</td><td>{{u.userdetail.marital_status}}</td>
+                            </tr>
+                            {% if u.userdetail.notes %}
+                            <tr>
+                                <td>Примечания:</td><td>{{u.userdetail.notes}}</td>
+                            </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+{% if u.userdetail %}
+    <div class="row content-block">
+        <div class="col-md-12">
+            <h3>Документы</h3>
+            {% if edu_docs %}
+            <ul class="profile-doc-list">
+                {% for doc in edu_docs %}
+                    <li>
+                        <a href="{% url 'docs_update' u.pk doc.id %}"><i class="fa fa-file-text-o"></i>
+                            {{ doc.name }} {{doc.series}} {{doc.number}} {% if doc.issued_by %}выдан {{doc.issued_by}}{% endif %} {% if doc.issue_date %}в {{doc.issue_date|date:"Y"}} г.{% endif %}{% if doc.issue_place %}, {{doc.issue_place}}{% endif %}
+                        </a>
+                    </li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <p>Здесь еще нет документов. <a href="{% url 'docs_create' u.pk %}">Добавим?</a></p>
+            {% endif %}
+        </div>
+    </div>
+
+
+    {% if orders %}
+    <div class="row content-block">
+        <div class="col-md-12">
+            <h3>Приказы</h3>
+            <table class="table table-striped">
+                <thead>
+                    <th>#</th>
+                    <th>Код</th>
+                    <th>Номер</th>
+                    <th>Дата</th>
+                    <th>Статус</th>
+                </thead>
+                <tbody>
+                    {% for order in orders %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{order.code}}</td>
+                            <td>{{order.number}}</td>
+                            <td>{{order.issue_date|date:"d.m.Y"}}</td>
+                            <td>{{order.guideline}}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% endif %}
+{% endif %}
+
+{% if edu %}
+<div class="row content-block">
+    <div class="col-md-12">
+        <h3>Квалификационные работы</h3>
+        {% if works %}
+        <ul class="profile-doc-list">
+            {% for work in works %}
+                <li>
+                    <a href="{% url 'works_update' u.pk work.id %}"><i class="fa fa-book"></i>
+                        {{work.name}} на тему "{{work.theme}}", {{work.date|date:"Y"}} год, {{work.place}}
+                    </a>
+                </li>
+            {% endfor %}
+        </ul>
+        {% else %}
+            <p>Здесь еще нет работ. <a href="#">Добавим?</a></p>
+        {% endif %}
+    </div>
+</div>
+{% endif %}
+
+{% if edu and edu.type != 'G' %}
+    <div class="row content-block">
+        <div class="col-md-12">
+            <h3>Общий рейтинг по семестрам</h3>
+            {% if edu.studies_set.all %}
+            <div class="row">
+            <div class="col-md-8">
+            <table class="rating-table">
+                <tr>
+                {% regroup disciplines by course as course_list %}
+                {% for course in course_list %}
+                    {% regroup course.list by semester as semester_list %}
+                    {% for semester in semester_list %}
+                        <td>
+                            <div style="height: {{semester.list|percent_rating}}px">
+                                <p>{{semester.list|percent_rating|floatformat:2}} %</p>
+                            </div>
+                        </td>
+                    {% endfor %}
+                {% endfor %}
+                </tr>
+            </table>
+            </div>
+            </div>
+            {% else %}
+                {% if edu %}
+                <p>Здесь еще нет данных рейтинга. <a href="{% url 'discipline_update' u.pk %}">Добавим?</a></p>
+                {% else %}
+                <p>В настоящее время пользователь не обучается. <a href="{% url 'profile_update' u.pk %}?q=education#header">Добавим обучение?</a></p>
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
+{% endif %}

@@ -1,0 +1,34 @@
+{% extends 'profiles/profile.html' %}
+
+
+{% block profile_content %}
+
+<div class="row content-block">
+	<div class="col-md-12">
+		<h2>История</h2>
+		<div class="profile-doc-list">
+			{% for edu in history %}
+				<div class="row">
+					<div class="col-md-12">
+						<p class="lead">{{ edu.get_type_display }} ({{edu.get_form_display}}) '{{ edu.end_date|date:"Y" }}</p>
+						<table class="table table-striped">
+							<tbody>
+								<tr><td>Статус: </td><td>{{edu.end_reason}}</td></tr>
+								<tr><td>Факультет: </td><td>{{edu.faculty}}</td></tr>
+								<tr><td>Специальность: </td><td>{{edu.speciality}}</td></tr>
+								<tr><td>Выпуская работа: </td><td>"{{edu.get_graduation_work}}"</td></tr>
+								<tr><td>Руководитель: </td><td>{{ edu.supervisor }}</td></tr>
+								<tr><td>Научная деятельность: </td><td>{% if edu.scientific_work %}{{edu.scientific_work}}{% else %}Нет данных{% endif %}</td></tr>
+								<tr><td>Примечания: </td><td>{% if edu.notes %}{{edu.notes}}{% else %}Отсутсвуют{% endif %}</td></tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+			{% empty %}
+				<p>Нет сведений о завершенном обучении.</p>
+			{% endfor %}
+		</div>
+	</div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+
+
+{% block title %}{{ block.super }}{% endblock %}
+
+{% block content %}
+
+	<div class="row flat-block">
+		<div class="col-md-5 col-md-offset-1">
+			<h1>ЕИОС. <span class="info">v.0.1.0.</span></h1>
+			<h2>Теперь вся информация об учебном процессе в одном месте. </h2>
+			<p>Узнавайте и формируйте свое расписание, заказывайте справки, работайте с документами и смотрите статистику успеваемости в одной системе.</p>
+		</div>
+		<div class="col-md-5">
+			<img src="{% static 'img/edios_1.png' %}" alt="edios" class="exb-img">
+		</div>
+	</div>
+
+{% endblock %}

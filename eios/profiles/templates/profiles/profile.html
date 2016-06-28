@@ -1,0 +1,132 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    <div class="container-header">
+      <div class="container">
+        <div class="page-header">
+          <h1><i class="fa fa-user"></i> Личный кабинет</h1>
+        </div>
+      </div>
+    </div>
+{% endblock %}
+
+{% block content %}
+
+<div class="row profile-main">
+{% if user.is_superuser or user.pk == u.pk or user.userdetail.professor.dept == u.userdetail.application.dept or user.userdetail.professor.dept == u.userdetail.get_education.dept %}
+    <div class="col-md-2 profile-menu-bar">
+        <div class="row">
+            <div class="col-md-12 profile-photo">
+                {% if u.userdetail.photo %}
+                    <div class="profile-photo-container">
+                    <a href="{% url 'profile' u.pk %}">
+                        <img src="{{ u.userdetail.photo.url }}" alt="{{u.userdetail.last_name}} {{u.userdetail.first_name|slice:'1'}}.{{u.userdetail.middle_name|slice:'1'}}" />
+                    </a>
+                    </div>
+                {% else %}
+                    <div class="no-photo-container">
+                        <span class="fa-stack">
+                          <i class="fa fa-camera fa-stack-1x"></i>
+                          <i class="fa fa-ban fa-stack-2x text-danger"></i>
+                        </span>
+                        <p>Нет фото</p>
+                    </div>
+                {% endif %}
+                {% if u.userdetail %}
+                    <p class="name">
+                        {{u.userdetail.last_name}} {{u.userdetail.first_name|slice:"1"}}.{{u.userdetail.middle_name|slice:"1"}}{% if u.userdetail.middle_name %}.{% endif %}
+                    </p>
+                {% endif %}
+                {% if u.userdetail.is_professor %}
+                    <p class="education">{{ u.userdetail.professor.get_position_display }}<br />
+                    {{ u.userdetail.professor.dept.abbr }}
+                    </p>
+                {% else %}
+                    {% if edu %}
+                        <p class="education">{{ edu.get_type_display }}, c {{edu.enter_date|date:"Y"}} года</p>
+                    {% endif %}
+                {% endif %}
+                {% if user.is_staff or user.pk == u.pk %}
+                    <a href="
+                        {% if u.userdetail %}
+                            {% url 'profile_update' u.pk %}
+                        {% else %}
+                            {% url 'profile_create' u.pk %}
+                        {% endif %}
+                    " class="profile update">Редактировать</a>
+                {% endif %}
+            </div>
+        </div>
+        <div class="row">
+            <ul class="profile-nav" data-spy="affix" data-offset-top="275">
+                <li class="{% if request.resolver_match.url_name == 'profile' %}active{% endif %}">
+                    <a href="{% url 'profile' u.pk %}"><i class="fa fa-user"></i>Личная карточка</a>
+                </li>
+                {% if u.userdetail.is_professor %}
+                    {% if u.userdetail.professor %}
+                    <li class="{% if request.resolver_match.url_name == 'dept_students' %}active{% endif %}">
+                        <a href="{% url 'dept_students' u.pk %}"><i class="fa fa-group"></i>Студенты</a>
+                    </li>
+                    {% endif %}
+                {% elif u.userdetail %}
+                    <li class="{% if request.resolver_match.url_name == 'discipline' %}active{% endif %}">
+                        <a href="{% url 'discipline' u.pk %}"><i class="fa fa-graduation-cap"></i>Дисциплины</a>
+                    </li>
+                    <li class="{% if request.resolver_match.url_name == 'works' %}active{% endif %}">
+                        <a href="{% url 'works' u.pk %}"><i class="fa fa-book"></i>Работы</a>
+                    </li>
+                    <li class="{% if request.resolver_match.url_name == 'docs' %}active{% endif %}">
+                        <a href="{% url 'docs' u.pk %}"><i class="fa fa-file-text-o"></i>Документы</a>
+                    </li>
+                    <li class="{% if request.resolver_match.url_name == 'history' %}active{% endif %}">
+                        <a href="{% url 'history' u.pk %}"><i class="fa fa-history"></i>История</a>
+                    </li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+    <div class="col-md-10">
+        <div class="row profile-bar">
+            <div class="col-md-9">
+                <ul class="custom-breadcrumb">
+                    {% block breadcrumbs %}
+                        <li><a href="#">Личный кабинет</a></li>
+                        <!-- <li><a href="#">Показатели</a></li>
+                        <li><a href="#">Общий рейтинг</a></li>
+                        <li><a href="#">Все курсы</a></li> -->
+                    {% endblock %}
+                </ul>
+            </div>
+            <div class="col-md-3">
+                <form role="search">
+                    <div class="form-group">
+                        <input id="search-input" type="text" class="form-control empty" placeholder="&#xF002; Поиск">
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12 profile-content">
+
+                {% block profile_content %}
+
+                    {% if u.userdetail.is_professor %}
+                        {% include 'profiles/professor_profile.html' %}
+                    {% else %}
+                        {% include 'profiles/student_profile.html' %}
+                    {% endif %}
+
+                {% endblock %}
+
+            </div>
+        </div>
+    </div>
+{% else %}
+    <div class="alert alert-warning" role="alert">
+        <p><i class="fa fa-exclamation-triangle"></i> У Вас недостаточно прав для просмотра данной страницы!</p>
+    </div>
+{% endif %}
+</div>
+
+{% endblock %}

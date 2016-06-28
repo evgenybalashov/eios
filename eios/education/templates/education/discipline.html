@@ -1,0 +1,93 @@
+{% extends 'profiles/profile.html' %}
+{% load core_filters %}
+
+
+{% block profile_content %}
+
+<div class="row content-block">
+	<div class="col-md-12">
+		<h2 class="header editable">Дисциплины</h2>
+		{% if edu %}
+			{% if user.is_superuser or user.userdetail.is_professor %}
+			<ul>
+				{% if disciplines %}
+				<li><a class="update-icon" href="{% url 'discipline_update' u.pk %}"><i class="fa fa-pencil"></i></a></li>
+				{% endif %}
+				<li><a class="update-icon" href="{% url 'discipline_create' u.pk %}"><i class="fa fa-plus"></i></a></li>
+			</ul>
+			{% endif %}
+		<div class="row">
+			<div class="col-md-12">
+				<form method="GET" action="" class="navbar-form navbar-left" role="search">
+			      	<span>Курс</span> 
+			      	<select class="select form-control" name="course">
+			      		<option value=""> </option>
+			      		{% for course in courses %}
+			      			<option value="{{ course }}">{{ course }}</option>
+			      		{% endfor %}
+			      	</select>
+			      	<span>Семестр</span> 
+			      	<select class="select form-control" name="semester">
+			      		<option value=""> </option>
+			      		{% for semester in semesters %}
+			      			<option value="{{ semester }}">{{ semester }}</option>
+			      		{% endfor %}
+			      	</select>
+			      <button type="submit" class="btn btn-default">Фильтровать</button>
+			    </form>
+			</div>
+		</div>
+		{% endif %}
+		{% regroup disciplines by course as course_list %}
+		{% for course in course_list %}
+			{% regroup course.list by semester as semester_list %}
+			{% for semester in semester_list %}
+				<h4>{{course.grouper}}-й курс {{semester.grouper}} семестр</h4>
+				<table class="table table-striped">
+					<thead>
+						<th>#</th>
+						<th>Код</th>
+						<th>Наименование предмета</th>
+						<th>ПрК</th>
+						<th>Час/Сем</th>
+						{% if edu.type != 'G' %}
+							<th>Рейтинг</th>
+						{% endif %}
+						<th>Оценка</th>
+					</thead>
+					<tbody>
+						{% for item in semester.list %}
+							<tr>
+								<td>{{forloop.counter}}</td>
+								<td>{{item.subject.code}}</td>
+								<td>{{item.subject}}</td>
+								<td>{{item.subject.prk}}</td>
+								<td>{{item.hour_sem}}</td>
+								{% if edu.type != 'G' and item.rating %}
+									<td>{{item.rating}}</td>
+								{% endif %}
+								<td>{{item.grade}}</td>
+							</tr>
+						{% endfor %}
+					</tbody>
+				</table>
+				{% if edu.type != 'G' and semester.list|sum_rating %}
+					<p><small>Сумма рейтинов равна {{semester.list|sum_rating}}, что составило {{semester.list|percent_rating|floatformat:2}}% от макс.</small></p>
+					<p><small>Сумма зачетных единиц в семестре равна 162</small></p>
+					{% endif %}
+			{% endfor %}
+		{% empty %}
+			{% if edu %}
+				<p>Нет пройденных дисциплин за указанный период.</p>
+			{% else %}
+				{% if user.is_superuser or user.userdetail.is_professor %}
+					<p>В настоящее время пользователь не обучается. <a href="{% url 'education_create' u.pk %}">Добавьте сведения об обучении</a>.</p>
+				{% else %}
+					<p>Нет сведений о пройденных дисциплинах.</p>
+				{% endif %}
+			{% endif %}
+		{% endfor %}
+	</div>
+</div>
+
+{% endblock %}

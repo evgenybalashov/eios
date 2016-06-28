@@ -1,0 +1,43 @@
+{% extends 'profiles/profile.html' %}
+
+
+{% block profile_content %}
+
+<div class="row content-block">
+	<div class="col-md-12">
+		<h2 class="header editable">Работы</h2>
+		{% if edu %}
+			{% if user.is_superuser or user.userdetail.is_professor %}
+				<ul>
+					<li>
+						<a class="update-icon" href="{% url 'works_create' u.pk %}">
+							<i class="fa fa-plus"></i>
+						</a>
+					</li>
+				</ul>
+			{% endif %}
+		{% endif %}
+		<div class="profile-doc-list">
+			{% for work in works %}
+				<div class="row" id="{{work.id}}">
+					<div class="col-md-12">
+						<a href="{% url 'works_update' u.pk work.id %}"><img src="{{ work.file.url }}" alt="Изображение отсутствует"></a>
+						<ul>
+							<li><a href="{% url 'works_update' u.pk work.id %}"><p class="lead">{{ work.name }}</p></a></li>
+							<li>на тему: "{{work.theme}}"</li>
+							<li>{{work.date|date:"Y"}} г.{% if work.place %}, {{work.place}}{% endif %}</li>
+						</ul>
+					</div>
+				</div>
+			{% empty %}
+				{% if user.is_superuser or user.userdetail.is_professor %}
+					<p>В настоящее время пользователь не обучается. <a href="{% url 'education_create' u.pk %}">Добавьте сведения об обучении</a>.</p>
+				{% else %}
+					<p>Нет загруженных работ.</p>
+				{% endif %}
+			{% endfor %}
+		</div>
+	</div>
+</div>
+
+{% endblock %}

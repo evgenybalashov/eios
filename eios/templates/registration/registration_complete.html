@@ -1,0 +1,37 @@
+{% extends "registration/registration_base.html" %}
+{% load i18n %}
+
+{% block title %}
+	<div class="container-header">
+      <div class="container">
+        <div class="page-header">
+          <h1><i class="fa fa-envelope-o"></i> Подтверждение регистрации</h1>
+        </div>
+      </div>
+    </div>
+{% endblock %}
+
+{% block registration_content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-8 col-md-offset-2">
+            <h3>Мы отправили Вам письмо на указанный адрес электронной почты</h3>
+            <p class="lead">Перейдите по ссылке в данном письме для завершения регистрации.</p>
+            <div class="alert alert-warning" role="alert">
+        	   <p>Обратите внимание! Если письмо до Вас не дошло, проверьте, не попало ли оно в спам ...</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+
+{% comment %}
+**registration/registration_complete.html**
+
+Used after successful completion of the registration form. This
+template has no context variables of its own, and should simply inform
+the user that an email containing account-activation information has
+been sent.
+{% endcomment %}

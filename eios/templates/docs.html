@@ -1,0 +1,32 @@
+{% extends 'profiles/profile.html' %}
+
+
+{% block profile_content %}
+
+<div class="row content-block">
+	<div class="col-md-12">
+		<h2 class="header editable">Документы</h2>
+		<ul>
+			<li><a class="update-icon" href="{% url 'docs_create' u.pk %}"><i class="fa fa-plus"></i></a></li>
+		</ul>
+		<div class="profile-doc-list">
+			{% for doc in docs %}
+				<div class="row" id="{{doc.number}}">
+					<div class="col-md-12">
+						<a href="{% url 'docs_update' u.pk doc.id %}"><img src="{{ doc.file.url }}" alt="Изображение отсутствует"></a>
+						<ul>
+							<li><a href="{% url 'docs_update' u.pk doc.id %}"><p class="lead">{{ doc.name }}</p></a></li>
+							<li>{{doc.series}} #{{doc.number}}</li>
+							{% if doc.issued_by %}<li>выдан: {{doc.issued_by}}</li>{% endif %}
+							{% if doc.issue_date %}<li>{{doc.issue_date|date:"Y"}} г.{% if doc.issue_place %}, {{doc.issue_place}}{% endif %}</li>{% endif %}
+						</ul>
+					</div>
+				</div>
+			{% empty %}
+				<p>Пока здесь нет документов. <a href="{% url 'docs_create' u.pk %}">Добавим?</a></p>
+			{% endfor %}
+		</div>
+	</div>
+</div>
+
+{% endblock %}

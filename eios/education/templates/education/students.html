@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+
+{% block title %}
+
+    <div class="container-header">
+      <div class="container">
+        <div class="page-header">
+          <h1><i class="fa fa-list"></i> Список {% if edu.type %}{{edu.get_type_display}}ов{% endif %} РХТУ</h1>
+        </div>
+      </div>
+    </div>
+
+{% endblock %}
+
+
+{% block content %}
+
+<div class="col-md-8 col-md-offset-2 student-list">
+{% if user.is_staff %}
+{% if edu.type %}
+  <nav class="navbar navbar-default">
+    <div class="container-fluid">
+
+    <form method="GET" action="" class="navbar-form navbar-left" role="search">
+      <input type="text" name="q" class="form-control" placeholder="Введите параметр (регистр важен!)" value="{{request.GET.q}}">
+      <button type="submit" class="btn btn-default">Искать {{edu.get_type_display}}ов</button>
+    </form>
+
+    </div>
+  </nav>
+{% endif %}
+  <table class="table table-striped">
+    <tbody>
+      {% for student in students %}
+        <tr>
+          <td>
+            <div class="profile-photo">
+              {% if student.user.userdetail.photo %}
+                <div class="profile-photo-container">
+                  <img src="{{ student.user.userdetail.photo.url }}" alt="{{student.user.userdetail.last_name}} {{student.user.userdetail.first_name|slice:'1'}}.{{student.user.userdetail.middle_name|slice:'1'}}" />
+                </div>
+              {% else %}
+                <div class="no-photo-container">
+                  <span class="fa-stack">
+                    <i class="fa fa-camera fa-stack-1x"></i>
+                    <i class="fa fa-ban fa-stack-2x text-danger"></i>
+                  </span>
+                  <p>Нет фото</p>
+                </div>
+              {% endif %}
+            </div>
+          </td>
+          <td>
+            <a href="{% url 'profile' student.user.pk %}"><p>{{student.user.userdetail}}</p></a>
+          </td>
+          <td><p>{{student.faculty.abbr}} '{{ student.end_date|date:"Y" }}</p></td>
+        </tr>
+      {% empty %}
+        <tr>
+          <td>
+            <p class="lead">Данные отсутствуют</p>
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% else %}
+  <div class="alert alert-warning" role="alert">
+    <p><i class="fa fa-exclamation-triangle"></i> У Вас недостаточно прав для просмотра данной страницы!</p>
+  </div>
+{% endif %}
+</div>
+{% endblock content %}
