@@ -218,7 +218,8 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#61bff9', end
 
 .profile-photo img{
 	height: 150px;
-	margin-left: 0px;
+	margin-top: -10%;
+	margin-left: -50%;
 }
 
 .profile-photo-container{
