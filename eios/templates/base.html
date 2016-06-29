@@ -70,7 +70,7 @@
             {% if user.is_superuser %}
               <li><a href="{% url 'admin:index' %}"> <i class="fa fa-cog"></i> </a></li>
             {% endif %}
-            <li><a href="#" title="Написать в службу поддержки"> <i class="fa fa-question"></i></a></li>
+            <!-- <li><a href="#" title="Написать в службу поддержки"> <i class="fa fa-question"></i></a></li> -->
             <li><a href="{% url 'auth_logout' %}">Выход</a></li>
             {% else %}
           </ul>
