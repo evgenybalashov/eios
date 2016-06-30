@@ -170,8 +170,13 @@ class EducationUpdateView(CommonContextMixin, UpdateView):
     template_name = "profiles/profile_update.html"
 
     def dispatch(self, request, *args, **kwargs):
-        if not request.user.is_superuser or not request.user.userdetail.is_professor:
-            return HttpResponseForbidden()
+        if not request.user.is_superuser:
+            try:
+                userdetail = request.user.userdetail
+                if not userdetail.is_professor:
+                    return HttpResponseForbidden()
+            except:
+                return HttpResponseForbidden()
         try:
             return super(EducationUpdateView, self).dispatch(request, *args, **kwargs)
         except Education.DoesNotExist:

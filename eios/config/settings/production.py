@@ -2,7 +2,7 @@ from .base import *
 
 
 DB_PASS = get_env_variable("DB_PASS")
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['eios.muctr.ru']
 
