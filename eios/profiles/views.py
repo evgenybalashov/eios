@@ -117,13 +117,13 @@ class ProfileUpdateView(CommonContextMixin, UpdateView):
         except UserDetail.DoesNotExist:
             return redirect('profile_create', self.kwargs['pk'])
 
-    def get_object(self):
-        return UserDetail.objects.get(user__pk=self.kwargs['pk'])
-
     def get_form_class(self):
         if self.request.user.userdetail.is_professor:
             return UserDetailForm
         return UserDetailShortForm
+
+    def get_object(self):
+        return UserDetail.objects.get(user__pk=self.kwargs['pk'])
 
     def get_success_url(self):
         return reverse('profile', args=[self.kwargs['pk']])
