@@ -122,8 +122,11 @@ class ProfileUpdateView(CommonContextMixin, UpdateView):
             return UserDetailForm
         return UserDetailShortForm
 
-    def get_object(self):
-        return UserDetail.objects.get(user__pk=self.kwargs['pk'])
+    def get_object(self, queryset=None):
+        print self.kwargs['pk']
+        u = UserDetail.objects.get(user__pk=self.kwargs['pk'])
+        print u
+        return u
 
     def get_success_url(self):
         return reverse('profile', args=[self.kwargs['pk']])
