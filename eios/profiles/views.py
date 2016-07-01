@@ -112,12 +112,15 @@ class ProfileUpdateView(CommonContextMixin, UpdateView):
     template_name = "profiles/profile_update.html"
     model = UserDetail
 
-    # def dispatch(self, request, *args, **kwargs):
-    #     try:
-    #         u = UserDetail.objects.get(user__pk=self.kwargs['pk'])
-    #     except UserDetail.DoesNotExist:
-    #         return redirect('profile_create', self.kwargs['pk'])
-    #     return super(ProfileUpdateView, self).dispatch(request, *args, **kwargs)
+    def dispatch(self, request, *args, **kwargs):
+        try:
+            u = UserDetail.objects.get(user__pk=self.kwargs['pk'])
+            try:
+                return super(ProfileUpdateView, self).dispatch(request, *args, **kwargs)
+            except:
+                return redirect('profile_create', request.user.pk)
+        except UserDetail.DoesNotExist:
+            return redirect('profile_create', self.kwargs['pk'])
 
     def get_form_class(self):
         if self.request.user.userdetail.is_professor:
