@@ -113,9 +113,10 @@ class ProfileUpdateView(CommonContextMixin, UpdateView):
 
     def dispatch(self, request, *args, **kwargs):
         try:
-            return super(ProfileUpdateView, self).dispatch(request, *args, **kwargs)
+            u = UserDetail.objects.get(user__pk=self.kwargs['pk'])
         except UserDetail.DoesNotExist:
             return redirect('profile_create', self.kwargs['pk'])
+        return super(ProfileUpdateView, self).dispatch(request, *args, **kwargs)
 
     def get_form_class(self):
         if self.request.user.userdetail.is_professor:
@@ -123,10 +124,7 @@ class ProfileUpdateView(CommonContextMixin, UpdateView):
         return UserDetailShortForm
 
     def get_object(self, queryset=None):
-        print self.kwargs['pk']
-        u = UserDetail.objects.get(user__pk=self.kwargs['pk'])
-        print u
-        return u
+        return UserDetail.objects.get(user__pk=self.kwargs['pk'])
 
     def get_success_url(self):
         return reverse('profile', args=[self.kwargs['pk']])
