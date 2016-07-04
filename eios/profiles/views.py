@@ -123,7 +123,6 @@ class ProfileUpdateView(CommonContextMixin, UpdateView):
         except:
             return redirect('profile_create', request.user.pk)
 
-
     def get_form_class(self):
         if self.request.user.is_superuser or self.request.user.userdetail.is_professor:
             return UserDetailForm
