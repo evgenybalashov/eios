@@ -125,7 +125,7 @@ class ProfileUpdateView(CommonContextMixin, UpdateView):
 
 
     def get_form_class(self):
-        if self.request.user.userdetail.is_professor:
+        if self.request.user.is_superuser or self.request.user.userdetail.is_professor:
             return UserDetailForm
         return UserDetailShortForm
 
