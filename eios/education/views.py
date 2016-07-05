@@ -18,7 +18,7 @@ from .models import Education, Professor, Studies, Work
 class DeptStudentListView(CommonContextMixin, ListView):
     context_object_name = 'students'
     template_name = "profiles/students.html"
-    paginate_by = 50
+    paginate_by = 100
 
     def get_queryset(self):
         try:

@@ -34,7 +34,19 @@ class UserListView(ListView):
 	model = User
 	context_object_name = "users"
 	template_name = "users.html"
-	paginate_by = 10
+	paginate_by = 200
+
+	def get_queryset(self):
+		users = User.objects.all()
+		query = self.request.GET.get("q")
+		if query:
+			users = users.filter(
+			Q(username=query)|
+			Q(userdetail__first_name__icontains=query)|
+			Q(userdetail__last_name__icontains=query)|
+			Q(userdetail__middle_name__icontains=query)
+			).distinct()
+		return users
 
 
 class DocsView(CommonContextMixin, ListView):
